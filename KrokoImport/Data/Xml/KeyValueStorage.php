@@ -2,22 +2,24 @@
 
 namespace KrokoImport\Data\XML;
 
-class KeyValueStorage {
+class KeyValueStorage
+{
 
-    /** @var KeyValue[] */
     private $_items = array();
 
-    function put($item) {
+    function put($item)
+    {
         $this->_items[] = $item;
     }
 
     /** @return KeyValue[] */
-    function get(): array {
+    function get(): array
+    {
         return $this->_items;
     }
 
-    /** @return KeyValue|nukk */
-    function getByKey(string $key) {
+    function getByKey(string $key): ?KeyValue
+    {
         $res = NULL;
         if ($this->count() > 0) {
             foreach ($this->get() as $value) {
@@ -30,11 +32,13 @@ class KeyValueStorage {
         return $res;
     }
 
-    function count(): int {
+    function count(): int
+    {
         return count($this->_items);
     }
 
-    function toString() {
+    function toString(): string
+    {
         $tmp = [];
         if ($this->count() > 0) {
             foreach ($this->get() as $value) {
@@ -42,26 +46,6 @@ class KeyValueStorage {
             }
         }
         return implode(', ', $tmp);
-    }
-
-}
-
-class KeyValue {
-
-    private $_key;
-    private $_value;
-
-    public function __construct(string $key, string $value) {
-        $this->_key = $key;
-        $this->_value = $value;
-    }
-
-    public function getKey(): string {
-        return $this->_key;
-    }
-
-    public function getValue(): string {
-        return $this->_value;
     }
 
 }

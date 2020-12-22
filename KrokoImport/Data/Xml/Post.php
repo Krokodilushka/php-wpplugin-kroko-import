@@ -2,50 +2,33 @@
 
 namespace KrokoImport\Data\XML;
 
-class Post {
+class Post
+{
 
-    /** @var string */
     private $_id;
-
-    /** @var string */
     private $_title;
-
-    /** @var string|null */
     private $_slug;
-
-    /** @var string|null */
     private $_content;
-
-    /** @var string|null */
     private $_thumbnail;
-
-    /** @var \DateTime */
     private $_date;
-
-    /** @var KeyValueStorage */
     private $_categories;
-
-    /** @var KeyValueStorage */
     private $_metas;
-
-    /** @var KeyValueStorage */
     private $_tags;
-
-    /** @var Comments */
     private $_comments;
 
     public function __construct(
-            $id,
-            $title,
-            $slug,
-            $thumbnail,
-            $date,
-            $content,
-            $categories,
-            $metas,
-            $tags,
-            $comments
-    ) {
+        $id,
+        $title,
+        $slug,
+        $thumbnail,
+        $date,
+        $content,
+        $categories,
+        $metas,
+        $tags,
+        $comments
+    )
+    {
         $this->_id = $id;
         $this->_title = $title;
         $this->_slug = $slug;
@@ -58,43 +41,53 @@ class Post {
         $this->_comments = $comments;
     }
 
-    function getID() {
+    function getID(): string
+    {
         return $this->_id;
     }
 
-    function getTitle() {
+    function getTitle(): string
+    {
         return $this->_title;
     }
 
-    function getSlug() {
+    function getSlug(): ?string
+    {
         return $this->_slug;
     }
 
-    function getContent() {
+    function getContent(): ?string
+    {
         return $this->_content;
     }
 
-    function getThumbnail() {
+    function getThumbnail(): ?string
+    {
         return $this->_thumbnail;
     }
 
-    function getDate() {
+    function getDate(): \DateTime
+    {
         return $this->_date;
     }
 
-    function getCategories() {
+    function getCategories(): KeyValueStorage
+    {
         return $this->_categories;
     }
 
-    function getMetas() {
+    function getMetas(): KeyValueStorage
+    {
         return $this->_metas;
     }
 
-    function getTags() {
+    function getTags(): KeyValueStorage
+    {
         return $this->_tags;
     }
 
-    function getComments() {
+    function getComments(): Comments
+    {
         return $this->_comments;
     }
 

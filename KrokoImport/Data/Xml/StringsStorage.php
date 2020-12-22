@@ -2,22 +2,25 @@
 
 namespace KrokoImport\Data\XML;
 
-class StringsStorage {
+class StringsStorage
+{
 
-    /** @var string */
     private $_items = array();
 
-    function put($item) {
+    function put($item)
+    {
         $this->_items[] = $item;
     }
 
     /** @return string[] */
-    function get() {
+    function get()
+    {
         return $this->_items;
     }
 
     /** @return string|null */
-    function getByKey($key) {
+    function getByKey(string $key): ?string
+    {
         $res = NULL;
         if ($this->count() > 0) {
             foreach ($this->get() as $value) {
@@ -30,11 +33,13 @@ class StringsStorage {
         return $res;
     }
 
-    function count(): int {
+    function count(): int
+    {
         return count($this->_items);
     }
 
-    function toString() {
+    function toString(): string
+    {
         return '[' . implode(', ', $this->get()) . ']';
     }
 

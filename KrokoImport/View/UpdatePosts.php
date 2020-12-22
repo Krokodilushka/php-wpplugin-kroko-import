@@ -1,5 +1,10 @@
+<?php
+/** @var $feedID string */
+/** @var $feedURL string */
+/** @var $response */
+?>
 <div class="wrap">
-    <p>feedID: <?php echo $feedID ?> url: <?php echo $feedURL ?></p>
-    <p>ответ:</p>    
+    <p>feedID: <?= $feedID ?> url: <?= $feedURL ?></p>
+    <p>ответ:</p>
     <pre><?php print_r($response); ?></pre>
 </div>

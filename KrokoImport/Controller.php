@@ -2,18 +2,20 @@
 
 namespace KrokoImport;
 
-class Controller {
+class Controller
+{
 
     const CRON_UPDATE_GET_KEY_NAME = 'kroko_import_update';
     const CRON_UPDATE_MAGIC_KEY = 'kroko_import_magic';
     const CRON_MAX_FEED_UPDATE_AT_ONCE = 1;
 
     private static $_instance = NULL;
-    private $_view;
-    private $_feedStorage;
-    private $_importPosts;
+    private static $_view;
+    private static $_feedStorage;
+    private static $_importPosts;
 
-    private function __construct() {
+    private function __construct()
+    {
         $this->_view = new View(__DIR__ . '/View');
         $this->_feedStorage = new FeedStorage();
         $this->_importPosts = new ImportPosts();
@@ -22,7 +24,8 @@ class Controller {
     /**
      * просто страницы
      */
-    private function options() {
+    private function options()
+    {
         echo $this->_view->get('Options', array(
             'currentUrl' => self::getRequestURI(),
             'feeds' => $this->_feedStorage->getAll(),
@@ -31,7 +34,8 @@ class Controller {
         ));
     }
 
-    private function feedOptionsUpdate($feedID) {
+    private function feedOptionsUpdate($feedID)
+    {
         $alerts = array();
         $feed = $this->_feedStorage->get($feedID);
         try {
@@ -51,11 +55,13 @@ class Controller {
         ));
     }
 
-    private function dropFeeds() {
+    private function dropFeeds()
+    {
         $this->_feedStorage->clearDB();
     }
 
-    private function feedOptionsInsert($url) {
+    private function feedOptionsInsert($url)
+    {
         $alerts = array();
         try {
             $feedData = XMLParser::parse(XMLParser::load($url));
@@ -73,7 +79,8 @@ class Controller {
         ));
     }
 
-    private function updatePosts($feedID) {
+    private function updatePosts($feedID)
+    {
         $feed = $this->_feedStorage->get($feedID);
         try {
             $this->_importPosts->perform($feed);
@@ -92,7 +99,8 @@ class Controller {
      * ввод от пользователя
      */
 
-    private function feedOptionsOnInsertOrUpdate($feedID, $feedUrl, $feedTitle, $intervalMin, $onExistsUpdate) {
+    private function feedOptionsOnInsertOrUpdate($feedID, $feedUrl, $feedTitle, $intervalMin, $onExistsUpdate)
+    {
         $alerts = array();
         try {
             $feedData = XMLParser::parse(XMLParser::load($feedUrl));
@@ -128,7 +136,8 @@ class Controller {
         ));
     }
 
-    private function feedOptionsOnDelete($feedID) {
+    private function feedOptionsOnDelete($feedID)
+    {
         $this->_feedStorage->delete($feedID);
         $this->options();
     }
@@ -137,12 +146,22 @@ class Controller {
      * Static
      */
 
-    static function getRequestURI() {
+    public static function getInstance(): \KrokoImport\Controller
+    {
+        if (self::$_instance === NULL) {
+            self::$_instance = new self();
+        }
+        return self::$_instance;
+    }
+
+    public static function getRequestURI()
+    {
         return strtok($_SERVER['REQUEST_URI'], "?") . "?" . strtok("?");
     }
 
     // все действия распределяются отсюда
-    static function controller() {
+    public static function controller()
+    {
         try {
             // create page
             $newXml = filter_input(INPUT_POST, 'new_xml');
@@ -182,7 +201,8 @@ class Controller {
     }
 
     // это запуск cron?
-    static function checkUpdatesByCron() {
+    public static function checkUpdatesByCron()
+    {
         $magicKey = filter_input(INPUT_GET, self::CRON_UPDATE_GET_KEY_NAME);
         if ($magicKey == self::getCronMagicKey()) {
             echo '<pre>';
@@ -216,7 +236,8 @@ class Controller {
         }
     }
 
-    static function getCronMagicKey() {
+    public static function getCronMagicKey()
+    {
         $res = get_option(self::CRON_UPDATE_MAGIC_KEY);
         if ($res === false) {
             $res = md5(rand(1, 9999999));
@@ -225,22 +246,18 @@ class Controller {
         return $res;
     }
 
-    static function feedOptionsLeftUntilUpdateComparator($objectA, $objectB) {
+    public static function feedOptionsLeftUntilUpdateComparator($objectA, $objectB)
+    {
         return $objectA->leftUntilUpdateSec() > $objectB->leftUntilUpdateSec();
     }
 
-    static function getInstance(): \KrokoImport\Controller {
-        if (self::$_instance === NULL) {
-            self::$_instance = new self();
-        }
-        return self::$_instance;
-    }
 
     /*
      * Private static
      */
 
-    private static function printError($e) {
+    private static function printError($e)
+    {
         echo $this->_view->get('Error', array(
             'message' => $e->getMessage()
         ));

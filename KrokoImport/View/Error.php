@@ -1,1 +1,2 @@
-<h2 style="text-align:center"><?php echo $message; ?></h2>
+<?php /** @var $message string */ ?>
+<h2 style="text-align:center"><?= $message; ?></h2>

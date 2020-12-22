@@ -2,6 +2,8 @@
 
 namespace KrokoImport;
 
+use KrokoImport\Exceptions\FeedNotFound;
+
 class FeedStorage {
 
     const FEEDS_LAST_ID_OPTION_KEY = 'kroko_import_last_feed_id';
@@ -25,7 +27,7 @@ class FeedStorage {
             }
         }
         if ($index === NULL) {
-            throw \KrokoImport\Excepions\FeedNotFound();
+            throw new FeedNotFound();
         }
         return $index;
     }

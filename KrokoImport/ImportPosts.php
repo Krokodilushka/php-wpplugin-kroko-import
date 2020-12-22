@@ -2,6 +2,8 @@
 
 namespace KrokoImport;
 
+use WP_Post;
+
 require_once ABSPATH . '/wp-admin/includes/taxonomy.php';
 require_once ABSPATH . 'wp-admin/includes/media.php';
 require_once ABSPATH . 'wp-admin/includes/file.php';
@@ -120,7 +122,7 @@ class ImportPosts {
             foreach ($xmlPost->getMetas()->get() as $meta) {
                 // если в xml мета использовался ключ, который используется для идентификации поста, то кинуть исключение
                 if ($meta->getKey() == self::WP_POST_META_KEY_ID) {
-                    throw new Excepion('illegal meta ' . WP_POST_META_KEY_ID . '');
+                    throw new \Excepion('Illegal meta ' . self::WP_POST_META_KEY_ID . '');
                 }
                 $metas[$meta->getKey()] = $meta->getValue();
             }
@@ -212,7 +214,7 @@ class ImportPosts {
                     $this->writeLogPost($xmlPost->getID(), 'у комментария wp есть мета ' . $comment->getMeta()->count());
                     foreach ($comment->getMeta()->get() as $meta) {
                         if ($meta->getKey() == self::WP_COMMENT_META_KEY_ID) {
-                            throw new Excepion('illegal meta ' . self::WP_COMMENT_META_KEY_ID . '');
+                            throw new \Excepion('illegal meta ' . self::WP_COMMENT_META_KEY_ID . '');
                         }
                         $insertCommentArgs['comment_meta'][$meta->getKey()] = $meta->getValue();
                     }

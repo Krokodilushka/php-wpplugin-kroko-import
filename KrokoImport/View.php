@@ -13,7 +13,7 @@ class View {
     public function get($template, $data = array()): string {
         $templateFile = $this->_dir . '/' . $template . '.php';
         if (!file_exists($templateFile)) {
-            throw new Exception('Error template (' . $templateFile . ')');
+            throw new \Exception('Error template (' . $templateFile . ')');
         }
         ob_start();
         if (is_array($data) && !empty($data)) {
