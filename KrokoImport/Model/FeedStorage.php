@@ -1,8 +1,10 @@
 <?php
 
-namespace KrokoImport;
+namespace KrokoImport\Model;
 
-use KrokoImport\Exceptions\FeedNotFound;
+use KrokoImport\Data\FeedOptions;
+use KrokoImport\Exceptions\Exception;
+use KrokoImport\Exceptions\FeedNotFoundException;
 
 class FeedStorage {
 
@@ -27,20 +29,20 @@ class FeedStorage {
             }
         }
         if ($index === NULL) {
-            throw new FeedNotFound();
+            throw new FeedNotFoundException();
         }
         return $index;
     }
 
     function update($id, $title, $url, $intervalSec, $onExistsUpdate) {
         $feeds = $this->getAll();
-        $feeds[$this->getIndexByID($id)] = new \KrokoImport\Data\FeedOptions($id, $url, $title, $intervalSec, $onExistsUpdate);
+        $feeds[$this->getIndexByID($id)] = new FeedOptions($id, $url, $title, $intervalSec, $onExistsUpdate);
         return $this->save($feeds);
     }
 
     function insert($title, $url, $intervalSec, $onExistsUpdate) {
         $feeds = $this->getAll();
-        $feeds[] = new \KrokoImport\Data\FeedOptions($this->incrementLastID(), $url, $title, $intervalSec, $onExistsUpdate);
+        $feeds[] = new FeedOptions($this->incrementLastID(), $url, $title, $intervalSec, $onExistsUpdate);
         return static::save($feeds);
     }
 
@@ -68,7 +70,7 @@ class FeedStorage {
         $id++;
         $res = update_option(self::FEEDS_LAST_ID_OPTION_KEY, $id);
         if (!$res) {
-            throw new \KrokoImport\Exceptions\Exception('update_option error');
+            throw new Exception('update_option error');
         }
         return $id;
     }

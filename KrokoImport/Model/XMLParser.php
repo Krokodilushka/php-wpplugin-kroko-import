@@ -1,6 +1,6 @@
 <?php
 
-namespace KrokoImport;
+namespace KrokoImport\Model;
 
 use \KrokoImport\Data\Xml\KeyValueStorage;
 use \KrokoImport\Data\Xml\KeyValue;
@@ -9,7 +9,7 @@ use \KrokoImport\Data\Xml\Comment;
 use \KrokoImport\Data\Xml\Post;
 use \KrokoImport\Data\Xml\Feed;
 use \KrokoImport\Data\Xml\StringsStorage;
-use KrokoImport\Exceptions\XML;
+use KrokoImport\Exceptions\XMLException;
 
 class XMLParser {
 
@@ -19,16 +19,16 @@ class XMLParser {
 
     static function parse($simpleXml) {
         if (!isset($simpleXml->post)) {
-            throw new XML("посты не найдены");
+            throw new XMLException("посты не найдены");
         }
         $feed = new Feed();
         $itemPos = 0;
         foreach ($simpleXml->post as $post) {
             if (!isset($post->id)) {
-                throw new XML("id не найден в post $itemPos");
+                throw new XMLException("id не найден в post $itemPos");
             }
             if (!isset($post->title)) {
-                throw new XML("title не найден в post $itemPos");
+                throw new XMLException("title не найден в post $itemPos");
             }
             $id = $post->id;
             $title = $post->title;
@@ -45,7 +45,7 @@ class XMLParser {
                 $catPos = 0;
                 foreach ($post->category as $value) {
                     if (!isset($value->id) || !isset($value->value)) {
-                        throw new XML("в категории нет id или value. post ID $id, категория #" . $catPos);
+                        throw new XMLException("в категории нет id или value. post ID $id, категория #" . $catPos);
                     }
                     $categories->put(new KeyValue((string) $value->id, (string) $value->value));
                     $catPos++;
@@ -66,7 +66,7 @@ class XMLParser {
                 $metaPos = 0;
                 foreach ($post->meta as $value) {
                     if (!isset($value->key) || !isset($value->value)) {
-                        throw new XML("в мета нет key или value. post ID $id, meta #" . $metaPos);
+                        throw new XMLException("в мета нет key или value. post ID $id, meta #" . $metaPos);
                     }
                     $metas->put(new KeyValue((string) $value->key, (string) $value->value));
                     $metaPos++;
@@ -96,16 +96,16 @@ class XMLParser {
         if (isset($simpleXMLElement->comment)) {
             foreach ($simpleXMLElement->comment as $comment) {
                 if (!isset($comment->id)) {
-                    throw new XML("у комментария должен быть guid");
+                    throw new XMLException("у комментария должен быть guid");
                 }
                 if (!isset($comment->author)) {
-                    throw new XML("у комментария должен быть author. comment id" . $comment->id);
+                    throw new XMLException("у комментария должен быть author. comment id" . $comment->id);
                 }
                 if (!isset($comment->date) || !is_numeric((string) $comment->date)) {
-                    throw new XML("у комментария должен быть date и это должно быть число. comment id" . $comment->id);
+                    throw new XMLException("у комментария должен быть date и это должно быть число. comment id" . $comment->id);
                 }
                 if (!isset($comment->text)) {
-                    throw new XML("у комментария должен быть text. comment id" . $comment->id);
+                    throw new XMLException("у комментария должен быть text. comment id" . $comment->id);
                 }
                 $metas = new KeyValueStorage();
                 // мета 
@@ -113,7 +113,7 @@ class XMLParser {
                     $metaPos = 0;
                     foreach ($comment->meta as $value) {
                         if (!isset($value->key) || !isset($value->value)) {
-                            throw new XML("в мета комментария нет key или value. comment xml ID $comment->id, meta #" . $metaPos);
+                            throw new XMLException("в мета комментария нет key или value. comment xml ID $comment->id, meta #" . $metaPos);
                         }
                         $metas->put(new KeyValue((string) $value->key, (string) $value->value));
                         $metaPos++;

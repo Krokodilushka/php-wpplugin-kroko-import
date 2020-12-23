@@ -2,6 +2,6 @@
 
 namespace KrokoImport\Exceptions;
 
-class Attachment extends Exception {
+class AttachmentException extends Exception {
     
 }

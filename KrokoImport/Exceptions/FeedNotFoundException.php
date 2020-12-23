@@ -2,6 +2,6 @@
 
 namespace KrokoImport\Exceptions;
 
-class WpCommentNotFound extends \Exception {
+class FeedNotFoundException extends Exception {
     
 }

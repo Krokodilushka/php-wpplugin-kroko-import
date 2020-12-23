@@ -21,14 +21,14 @@ spl_autoload_register(function ($className) {
     }
 });
 
-add_action('init', '\KrokoImport\Controller::checkUpdatesByCron');
+//add_action('init', '\KrokoImport\Controller::checkUpdatesByCron');
 add_action('admin_menu', function () {
     add_menu_page(
         'Импорт постов и комметариев',
         'Импорт постов и комметариев',
         'manage_options',
         'kroko-import-main-menu',
-        ['\KrokoImport\Controller', 'controller']
+        [\KrokoImport\Route::class, 'route']
     );
 });
 //add_filter('get_the_post_thumbnail_url', function ($html, $postid, $thumbnailid) {

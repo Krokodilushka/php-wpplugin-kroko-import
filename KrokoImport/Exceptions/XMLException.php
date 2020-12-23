@@ -2,6 +2,6 @@
 
 namespace KrokoImport\Exceptions;
 
-class PostAlreadyExists extends Exception {
+class XMLException extends Exception {
     
 }

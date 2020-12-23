@@ -1,7 +1,12 @@
 <?php
 
-namespace KrokoImport;
+namespace KrokoImport\Model;
 
+use KrokoImport\Exceptions\AttachmentException;
+use KrokoImport\Exceptions\Exception;
+use KrokoImport\Exceptions\PostAlreadyExistsException;
+use KrokoImport\Exceptions\WpCommentNotFoundException;
+use KrokoImport\Exceptions\WpPostNotFoundException;
 use WP_Post;
 
 require_once ABSPATH . '/wp-admin/includes/taxonomy.php';
@@ -9,7 +14,8 @@ require_once ABSPATH . 'wp-admin/includes/media.php';
 require_once ABSPATH . 'wp-admin/includes/file.php';
 require_once ABSPATH . 'wp-admin/includes/image.php';
 
-class ImportPosts {
+class ImportPosts
+{
 
     const WP_POST_META_KEY_ID = 'kroko_import_post_id';
     const WP_CATEGORY_META_KEY_ID = 'kroko_import_category_id';
@@ -17,26 +23,28 @@ class ImportPosts {
     const WP_POST_THUMBNAIL_URL_META_KEY_ID = 'kroko_import_thumbnail_url';
 
     private $_log = array();
-	
-	function __construct(){
-		if ( $role = get_role('administrator') ) $role->add_cap( 'unfiltered_upload' );
-		// echo $role;
-		// echo 1;exit;
-	}
+
+    function __construct()
+    {
+        if ($role = get_role('administrator')) $role->add_cap('unfiltered_upload');
+    }
 
     /*
      * logs
      */
 
-    function getLogs() {
+    function getLogs()
+    {
         return $this->_log;
     }
 
-    function clearLogs() {
+    function clearLogs()
+    {
         return $this->_log = array();
     }
 
-    private function writeLogPost($postID, $message) {
+    private function writeLogPost($postID, $message)
+    {
         $this->_log['posts'][$postID][] = $message;
     }
 
@@ -45,10 +53,11 @@ class ImportPosts {
      */
 
     /**
-     * 
+     *
      * @param \KrokoImport\Data\FeedOptions $feedOptions
      */
-    function perform($feedOptions) {
+    function perform($feedOptions)
+    {
         $xml = XMLParser::load($feedOptions->getUrl());
         $parsed = XMLParser::parse($xml);
         if (!empty($parsed->countPosts()) > 0) {
@@ -58,7 +67,7 @@ class ImportPosts {
                     $this->insertOrUpdateWPPost($post, $feedOptions->getOnExistsUpdate());
                     $this->insertOrUpdateWPComment($post, NULL, $post->getComments());
                     $this->insertOrUpdateWPThumbnail($post, $post->getThumbnail());
-                } catch (\KrokoImport\Exceptions\PostAlreadyExists $e) {
+                } catch (PostAlreadyExistsException $e) {
                     $this->writeLogPost($post->getID(), 'такой пост уже найден. по настройкам фида не нужно обновлять');
                 }
                 $this->writeLogPost($post->getID(), 'конец обработки XML поста');
@@ -74,11 +83,12 @@ class ImportPosts {
      */
 
     /**
-     * 
+     *
      * @param \KrokoImport\Data\XML\Post $xmlPost
      * @param boolean $updateIfExists
      */
-    private function insertOrUpdateWPPost($xmlPost, $updateIfExists) {
+    private function insertOrUpdateWPPost($xmlPost, $updateIfExists)
+    {
         // про вставке эти параметы нужны будут точно
         $wpInsertPostArgs = array(
             'comment_status' => 'open', // 'closed' означает, что комментарии закрыты.
@@ -96,12 +106,12 @@ class ImportPosts {
             $wpPost = $this->getWPPostByXMLPost($xmlPost);
             // будет изменние поста
             if (!$updateIfExists) {
-                throw new \KrokoImport\Exceptions\PostAlreadyExists();
+                throw new PostAlreadyExistsException();
             }
             $this->writeLogPost($xmlPost->getID(), 'будет обновление поста');
             $wpInsertPostArgs['ID'] = $wpPost->ID;
             $wpInsertPostArgs['post_date'] = $wpPost->post_date;
-        } catch (\KrokoImport\Exceptions\WpPostNotFound $e) {
+        } catch (WpPostNotFoundException $e) {
             // будет вставка нового поста, нужно установить дату
             $this->writeLogPost($xmlPost->getID(), 'будет вставка поста');
             $wpInsertPostArgs['post_date'] = $xmlPost->getDate()->format('Y-m-d H:i:s');
@@ -122,7 +132,7 @@ class ImportPosts {
             foreach ($xmlPost->getMetas()->get() as $meta) {
                 // если в xml мета использовался ключ, который используется для идентификации поста, то кинуть исключение
                 if ($meta->getKey() == self::WP_POST_META_KEY_ID) {
-                    throw new \Excepion('Illegal meta ' . self::WP_POST_META_KEY_ID . '');
+                    throw new \Exception('Illegal meta ' . self::WP_POST_META_KEY_ID . '');
                 }
                 $metas[$meta->getKey()] = $meta->getValue();
             }
@@ -150,17 +160,18 @@ class ImportPosts {
         $wpInsertPostArgs['meta_input'] = $metas; // добавит указанные мета поля. По умолчанию: ''. с версии 4.4.
         $postID = wp_insert_post(wp_slash($wpInsertPostArgs));
         if (!is_numeric($postID)) {
-            throw new \KrokoImport\Exceptions\Exception('ошибка при получении id только что вставленного поста');
+            throw new Exception('ошибка при получении id только что вставленного поста');
         }
         $this->writeLogPost($xmlPost->getID(), 'ID поста в WP : ' . $postID);
         return $postID;
     }
 
     /**
-     * 
+     *
      * @param \KrokoImport\Data\XML\KeyValue $category
      */
-    private function insertOrUpdateCategory($postID, $category) {
+    private function insertOrUpdateCategory($postID, $category)
+    {
         $this->writeLogPost($postID, 'категория key: ' . $category->getKey() . ', value: ' . $category->getValue());
         // параметры категории для вставки в wp
         $insertCatArgs = array(
@@ -186,7 +197,7 @@ class ImportPosts {
             $this->writeLogPost($postID, 'категория вставилась');
             add_term_meta($insertID, self::WP_CATEGORY_META_KEY_ID, $category->getKey(), true);
         } else {
-            throw new \KrokoImport\Exceptions\Exception('wp_insert_category response error');
+            throw new Exception('wp_insert_category response error');
         }
         return $insertID;
     }
@@ -196,7 +207,8 @@ class ImportPosts {
      * @param int $replyTo wp comment id
      * @param \KrokoImport\Data\XML\Comments $comments
      */
-    private function insertOrUpdateWPComment($xmlPost, $replyTo, $comments) {
+    private function insertOrUpdateWPComment($xmlPost, $replyTo, $comments)
+    {
         $wpPost = $this->getWPPostByXMLPost($xmlPost);
         // добавление комментариев
         if ($comments->count() > 0) {
@@ -214,7 +226,7 @@ class ImportPosts {
                     $this->writeLogPost($xmlPost->getID(), 'у комментария wp есть мета ' . $comment->getMeta()->count());
                     foreach ($comment->getMeta()->get() as $meta) {
                         if ($meta->getKey() == self::WP_COMMENT_META_KEY_ID) {
-                            throw new \Excepion('illegal meta ' . self::WP_COMMENT_META_KEY_ID . '');
+                            throw new \Exception('illegal meta ' . self::WP_COMMENT_META_KEY_ID . '');
                         }
                         $insertCommentArgs['comment_meta'][$meta->getKey()] = $meta->getValue();
                     }
@@ -227,7 +239,7 @@ class ImportPosts {
                     $commentID = $currentComment->comment_ID;
                     $insertCommentArgs['comment_ID'] = $commentID;
                     wp_update_comment($insertCommentArgs);
-                } catch (\KrokoImport\Exceptions\WpCommentNotFound $e) {
+                } catch (WpCommentNotFoundException $e) {
                     // вставить новый
                     $this->writeLogPost($xmlPost->getID(), 'вставка');
                     $insertCommentArgs['comment_date'] = $comment->getDate()->format('Y-m-d H:i:s');
@@ -245,12 +257,13 @@ class ImportPosts {
     }
 
     /**
-     * 
+     *
      * @param \KrokoImport\Data\XML\Post $xmlPost
      * @param string $thumbnailUrl
      * @throws Exception
      */
-    private function insertOrUpdateWPThumbnail($xmlPost, $thumbnailUrl) {
+    private function insertOrUpdateWPThumbnail($xmlPost, $thumbnailUrl)
+    {
         $this->writeLogPost($xmlPost->getID(), 'thumbnail ' . $thumbnailUrl);
         // поиск поста с таким id
         $wpPost = $this->getWPPostByXMLPost($xmlPost);
@@ -261,14 +274,14 @@ class ImportPosts {
         } else if (!$thumbnailMeta || $thumbnailMeta != $thumbnailUrl) {
             $this->writeLogPost($xmlPost->getID(), 'thumbnail insert/update');
             $attachmentID = media_sideload_image($thumbnailUrl, $wpPost->ID, $wpPost->title, 'id');
-			if ($attachmentID instanceof \WP_Error){
-				throw new \KrokoImport\Exceptions\Attachment('ошибка при загрузке thumbnail. wperror: ' . $attachmentID->get_error_code().' '. $attachmentID->get_error_message().' '.$attachmentID->get_error_data()); 
-			}
+            if ($attachmentID instanceof \WP_Error) {
+                throw new AttachmentException('ошибка при загрузке thumbnail. wperror: ' . $attachmentID->get_error_code() . ' ' . $attachmentID->get_error_message() . ' ' . $attachmentID->get_error_data());
+            }
             if (!is_numeric($attachmentID)) {
-                throw new \KrokoImport\Exceptions\Attachment('ошибка при загрузке thumbnail. $attachmentID: ' . $attachmentID);
+                throw new AttachmentException('ошибка при загрузке thumbnail. $attachmentID: ' . $attachmentID);
             }
             if (!set_post_thumbnail($wpPost->ID, $attachmentID)) {
-                throw new \KrokoImport\Exceptions\Attachment('ошибка set_post_thumbnail');
+                throw new AttachmentException('ошибка set_post_thumbnail');
             }
             update_post_meta($wpPost->ID, self::WP_POST_THUMBNAIL_URL_META_KEY_ID, $thumbnailUrl);
         } else {
@@ -277,12 +290,13 @@ class ImportPosts {
     }
 
     /**
-     * 
+     *
      * @param \KrokoImport\Data\XML\Post $post
      * @return WP_Post
-     * @throws \KrokoImport\Exceptions\WpPostNotFound
+     * @throws WpPostNotFoundException
      */
-    private function getWPPostByXMLPost($post) {
+    private function getWPPostByXMLPost($post)
+    {
         $wpPost = get_posts(array(
             'meta_key' => self::WP_POST_META_KEY_ID,
             'meta_value' => $post->getID(),
@@ -291,17 +305,18 @@ class ImportPosts {
         if (!empty($wpPost)) {
             return current($wpPost);
         } else {
-            throw new \KrokoImport\Exceptions\WpPostNotFound('wp post by xml post ID ' . $post->getID() . ' not found');
+            throw new WpPostNotFoundException('wp post by xml post ID ' . $post->getID() . ' not found');
         }
     }
 
     /**
-     * 
+     *
      * @param \KrokoImport\Data\XML\Comment $xmlComment
      * @return \WP_Comment
-     * @throws \KrokoImport\Exceptions\WpCommentNotFound
+     * @throws WpCommentNotFoundException
      */
-    private function getWPCommentByXMLComment($xmlComment) {
+    private function getWPCommentByXMLComment($xmlComment)
+    {
         $wpComments = get_comments(array(
             'meta_key' => self::WP_COMMENT_META_KEY_ID,
             'meta_value' => $xmlComment->getID(),
@@ -309,7 +324,7 @@ class ImportPosts {
         if (!empty($wpComments)) {
             return current($wpComments);
         } else {
-            throw new \KrokoImport\Exceptions\WpCommentNotFound('wp comment by xml comment ID ' . $xmlComment->getID() . ' not found');
+            throw new WpCommentNotFoundException('wp comment by xml comment ID ' . $xmlComment->getID() . ' not found');
         }
     }
 

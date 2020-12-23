@@ -1,6 +1,6 @@
 <?php
 
-namespace KrokoImport;
+namespace KrokoImport\Model;
 
 class View {
 

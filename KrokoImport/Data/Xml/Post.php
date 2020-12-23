@@ -81,7 +81,7 @@ class Post
         return $this->_metas;
     }
 
-    function getTags(): KeyValueStorage
+    function getTags(): StringsStorage
     {
         return $this->_tags;
     }

@@ -2,6 +2,6 @@
 
 namespace KrokoImport\Exceptions;
 
-class FeedNotFound extends Exception {
+class XMLParserException extends Exception {
     
 }
