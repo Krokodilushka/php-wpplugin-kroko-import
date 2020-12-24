@@ -6,21 +6,25 @@ use KrokoImport\Data\FeedOptions;
 use KrokoImport\Exceptions\Exception;
 use KrokoImport\Exceptions\FeedNotFoundException;
 
-class FeedStorage {
+class FeedStorage
+{
 
     const FEEDS_LAST_ID_OPTION_KEY = 'kroko_import_last_feed_id';
     const FEEDS_OPTION_KEY = 'kroko_import_feeds';
 
-    function getAll() {
+    function getAll(): array
+    {
         $res = get_option(self::FEEDS_OPTION_KEY);
         return $res ?: array();
     }
 
-    function get($id) {
+    function get($id): FeedOptions
+    {
         return $this->getAll()[$this->getIndexByID($id)];
     }
 
-    function getIndexByID($id) {
+    function getIndexByID($id): int
+    {
         $index = NULL;
         foreach ($this->getAll() as $key => $feed) {
             if ($feed->getID() == $id) {
@@ -34,38 +38,47 @@ class FeedStorage {
         return $index;
     }
 
-    function update($id, $title, $url, $intervalSec, $onExistsUpdate) {
+    function update(string $id, string $title, int $saveAtOnce, string $url, int $intervalSec, bool $onExistsUpdate): void
+    {
         $feeds = $this->getAll();
-        $feeds[$this->getIndexByID($id)] = new FeedOptions($id, $url, $title, $intervalSec, $onExistsUpdate);
-        return $this->save($feeds);
+        $feeds[$this->getIndexByID($id)] = new FeedOptions($id, $url, $title, $saveAtOnce, $intervalSec, $onExistsUpdate);
+        $this->save($feeds);
     }
 
-    function insert($title, $url, $intervalSec, $onExistsUpdate) {
+
+    function insert(string $title, int $saveAtOnce, string $url, int $intervalSec, bool $onExistsUpdate): int
+    {
         $feeds = $this->getAll();
-        $feeds[] = new FeedOptions($this->incrementLastID(), $url, $title, $intervalSec, $onExistsUpdate);
-        return static::save($feeds);
+        $newId = $this->incrementLastID();
+        $feeds[] = new FeedOptions($newId, $url, $title, $saveAtOnce, $intervalSec, $onExistsUpdate);
+        static::save($feeds);
+        return $newId;
     }
 
-    function delete($id) {
+    function delete(string $id): void
+    {
         $feeds = $this->getAll();
         $index = $this->getIndexByID($id);
         unset($feeds[$index]);
-        return $this->save($feeds);
+        $this->save($feeds);
     }
 
-    function setLastUpdateTime($id, $time) {
+    function setLastUpdateTime(string $id): void
+    {
         $feeds = $this->getAll();
         $index = $this->getIndexByID($id);
         $feeds[$index]->setLastUpdateTime(time());
-        return $this->save($feeds);
+        $this->save($feeds);
     }
 
-    function getLastID() {
+    function getLastID(): int
+    {
         $res = get_option(self::FEEDS_LAST_ID_OPTION_KEY);
         return $res ?: 0;
     }
 
-    function incrementLastID() {
+    function incrementLastID(): int
+    {
         $id = $this->getLastID();
         $id++;
         $res = update_option(self::FEEDS_LAST_ID_OPTION_KEY, $id);
@@ -75,12 +88,16 @@ class FeedStorage {
         return $id;
     }
 
-    function clearDB() {
+    function clearDB(): bool
+    {
         return delete_option(self::FEEDS_OPTION_KEY);
     }
 
-    private function save($feeds) {
-        return update_option(self::FEEDS_OPTION_KEY, $feeds);
+    private function save($feeds): void
+    {
+        if (!update_option(self::FEEDS_OPTION_KEY, $feeds)) {
+            throw new Exception('Ошибка при сохранении фидов');
+        }
     }
 
 }

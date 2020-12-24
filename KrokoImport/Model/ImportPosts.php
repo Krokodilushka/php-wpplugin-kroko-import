@@ -4,12 +4,11 @@ namespace KrokoImport\Model;
 
 use KrokoImport\Exceptions\AttachmentException;
 use KrokoImport\Exceptions\Exception;
-use KrokoImport\Exceptions\PostAlreadyExistsException;
 use KrokoImport\Exceptions\WpCommentNotFoundException;
 use KrokoImport\Exceptions\WpPostNotFoundException;
 use WP_Post;
 
-require_once ABSPATH . '/wp-admin/includes/taxonomy.php';
+require_once ABSPATH . 'wp-admin/includes/taxonomy.php';
 require_once ABSPATH . 'wp-admin/includes/media.php';
 require_once ABSPATH . 'wp-admin/includes/file.php';
 require_once ABSPATH . 'wp-admin/includes/image.php';
@@ -43,11 +42,6 @@ class ImportPosts
         return $this->_log = array();
     }
 
-    private function writeLogPost($postID, $message)
-    {
-        $this->_log['posts'][$postID][] = $message;
-    }
-
     /*
      * public
      */
@@ -56,25 +50,36 @@ class ImportPosts
      *
      * @param \KrokoImport\Data\FeedOptions $feedOptions
      */
-    function perform($feedOptions)
+    public function perform($feedOptions)
     {
         $xml = XMLParser::load($feedOptions->getUrl());
         $parsed = XMLParser::parse($xml);
+        $saveAtOnce = $feedOptions->getSaveAtOnce();
         if (!empty($parsed->countPosts()) > 0) {
+            $newPosts = 0;
             foreach ($parsed->getPosts() as $post) {
                 $this->writeLogPost($post->getID(), 'начало обработки XML поста');
                 try {
-                    $this->insertOrUpdateWPPost($post, $feedOptions->getOnExistsUpdate());
-                    $this->insertOrUpdateWPComment($post, NULL, $post->getComments());
-                    $this->insertOrUpdateWPThumbnail($post, $post->getThumbnail());
-                } catch (PostAlreadyExistsException $e) {
-                    $this->writeLogPost($post->getID(), 'такой пост уже найден. по настройкам фида не нужно обновлять');
+                    $wpPost = $this->getWPPostByXMLPost($post);
+                    if (!$feedOptions->getOnExistsUpdate()) {
+                        $this->writeLogPost($post->getID(), 'такой пост уже найден. по настройкам фида не нужно обновлять');
+                        continue;
+                    }
+                    $this->updateWPPost($wpPost, $post);
+                } catch (WpPostNotFoundException $e) {
+                    $this->insertWPPost($post);
+                    $newPosts++;
                 }
                 $this->writeLogPost($post->getID(), 'конец обработки XML поста');
-//                break;
+                $this->insertOrUpdateWPComment($post, NULL, $post->getComments());
+                $this->insertOrUpdateWPThumbnail($post, $post->getThumbnail());
+                if ($saveAtOnce != 0 && $newPosts >= $saveAtOnce) {
+                    $this->writeLogPost($post->getID(), 'добавлено ' . $newPosts . ' постов, по настройкам фида максимум можно ' . $saveAtOnce);
+                    break;
+                }
             }
         } else {
-            $this->writeLogPost($post->getID(), 'в XML нет постов');
+            $this->writeXmlLog('в XML нет постов');
         }
     }
 
@@ -82,13 +87,24 @@ class ImportPosts
      * private
      */
 
+    private function writeXmlLog($message)
+    {
+        $this->_log['xml'][] = $message;
+    }
+
+    private function writeLogPost($postID, $message)
+    {
+        $this->_log['posts'][$postID][] = $message;
+    }
+
     /**
      *
      * @param \KrokoImport\Data\XML\Post $xmlPost
      * @param boolean $updateIfExists
      */
-    private function insertOrUpdateWPPost($xmlPost, $updateIfExists)
+    private function insertWPPost(\KrokoImport\Data\XML\Post $xmlPost): int
     {
+        $this->writeLogPost($xmlPost->getID(), 'будет вставка поста');
         // про вставке эти параметы нужны будут точно
         $wpInsertPostArgs = array(
             'comment_status' => 'open', // 'closed' означает, что комментарии закрыты.
@@ -99,24 +115,28 @@ class ImportPosts
             'post_title' => $xmlPost->getTitle(), // Заголовок (название) записи.
             'post_content' => $xmlPost->getContent(), // Полный текст записи.
         );
+        $wpInsertPostArgs['post_date'] = $xmlPost->getDate()->format('Y-m-d H:i:s');
+        return $this->insertPostDb($wpInsertPostArgs, $xmlPost);
+    }
 
+    private function updateWPPost(WP_Post $wpPost, \KrokoImport\Data\XML\Post $xmlPost): int
+    {
+        $wpInsertPostArgs = array(
+            'comment_status' => 'open', // 'closed' означает, что комментарии закрыты.
+            'ping_status' => 'closed', // 'closed' означает, что пинги и уведомления выключены.
+            'post_author' => 1, // id автора
+            'post_status' => 'publish', // Статус создаваемой записи.
+            'post_type' => 'post', // Тип записи.
+            'post_title' => $xmlPost->getTitle(), // Заголовок (название) записи.
+            'post_content' => $xmlPost->getContent(), // Полный текст записи.
+        );
+        $wpInsertPostArgs['ID'] = $wpPost->ID;
+        $wpInsertPostArgs['post_date'] = $wpPost->post_date;
+        return $this->insertPostDb($wpInsertPostArgs, $xmlPost);
+    }
 
-        // поиск поста с таким id
-        try {
-            $wpPost = $this->getWPPostByXMLPost($xmlPost);
-            // будет изменние поста
-            if (!$updateIfExists) {
-                throw new PostAlreadyExistsException();
-            }
-            $this->writeLogPost($xmlPost->getID(), 'будет обновление поста');
-            $wpInsertPostArgs['ID'] = $wpPost->ID;
-            $wpInsertPostArgs['post_date'] = $wpPost->post_date;
-        } catch (WpPostNotFoundException $e) {
-            // будет вставка нового поста, нужно установить дату
-            $this->writeLogPost($xmlPost->getID(), 'будет вставка поста');
-            $wpInsertPostArgs['post_date'] = $xmlPost->getDate()->format('Y-m-d H:i:s');
-        }
-
+    private function insertPostDb(array $args, \KrokoImport\Data\XML\Post $xmlPost): int
+    {
         // есть slug?
         if ($xmlPost->getSlug() !== NULL) {
             $this->writeLogPost($xmlPost->getID(), 'есть slug ' . $xmlPost->getSlug());

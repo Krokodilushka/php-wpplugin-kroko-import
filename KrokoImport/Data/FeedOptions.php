@@ -8,16 +8,18 @@ class FeedOptions
     private $_id;
     private $_url;
     private $_title;
-    private $_updateIntervalSec;
+    private $_saveAtOnce;
+    private $_updateIntervalMin;
     private $_onExistsUpdate;
     private $_lastUpdateTime;
 
-    public function __construct(string $id, string $url, string $title, int $updateIntervalSec, bool $onExistsUpdate, ?int $lastUpdateTime = NULL)
+    public function __construct(string $id, string $url, string $title, int $saveAtOnce, int $updateIntervalMin, bool $onExistsUpdate, ?int $lastUpdateTime = NULL)
     {
         $this->_id = $id;
         $this->_url = $url;
         $this->_title = $title;
-        $this->_updateIntervalSec = $updateIntervalSec;
+        $this->_saveAtOnce = $saveAtOnce;
+        $this->_updateIntervalMin = $updateIntervalMin;
         $this->_onExistsUpdate = $onExistsUpdate;
         $this->_title = $title;
         $this->_lastUpdateTime = $lastUpdateTime;
@@ -38,9 +40,14 @@ class FeedOptions
         return $this->_title;
     }
 
-    function getUpdateIntervalSec(): int
+    public function getSaveAtOnce(): int
     {
-        return $this->_updateIntervalSec;
+        return $this->_saveAtOnce;
+    }
+
+    function getUpdateIntervalMin(): int
+    {
+        return $this->_updateIntervalMin;
     }
 
     function getOnExistsUpdate(): bool
@@ -61,7 +68,7 @@ class FeedOptions
     function leftUntilUpdateSec(): int
     {
         $lastUpdate = $this->getLastUpdateTime() ?: 0;
-        $left = ($lastUpdate + $this->getUpdateIntervalSec()) - time();
+        $left = ($lastUpdate + $this->getUpdateIntervalMin()) - time();
         return ($left < 0) ? 0 : $left;
     }
 
