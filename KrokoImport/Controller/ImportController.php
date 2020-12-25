@@ -6,16 +6,16 @@ namespace KrokoImport\Controller;
 
 use KrokoImport\Exceptions\Exception;
 use KrokoImport\Model\Holder;
-use KrokoImport\Model\ImportPosts;
+use KrokoImport\Model\Import\Import;
 
 class ImportController extends Controller
 {
-    private $_importPosts;
+    private $_import;
 
     public function __construct(Holder $holder)
     {
         parent::__construct($holder);
-        $this->_importPosts = new ImportPosts;
+        $this->_import = new Import;
     }
 
     public function manual(): string
@@ -25,8 +25,9 @@ class ImportController extends Controller
             throw new Exception('$feedId not found');
         }
         $feed = $this->getHolder()->getFeedStorage()->get($feedId);
-        $this->_importPosts->perform($feed);
-        $logs = $this->_importPosts->getLogs();
+        $this->_import->processFeed($feed);
+        $this->getHolder()->getFeedStorage()->setLastUpdateTime($feedId);
+        $logs = $this->_import->getLogs();
         return '<pre>' . print_r($logs, true) . '</pre>';
     }
 }
