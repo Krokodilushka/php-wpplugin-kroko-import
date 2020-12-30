@@ -14,8 +14,14 @@ class FeedStorage
 
     function getAll(): array
     {
-        $res = get_option(self::FEEDS_OPTION_KEY);
-        return $res ?: array();
+        $feeds = get_option(self::FEEDS_OPTION_KEY);
+        $arr = [];
+        if (!is_null($feeds) && !empty($feeds)) {
+            foreach ($feeds as $feed) {
+                $arr[] = FeedOptions::fromArray($feed);
+            }
+        }
+        return $arr;
     }
 
     function get($id): FeedOptions
@@ -44,7 +50,6 @@ class FeedStorage
         $feeds[$this->getIndexByID($id)] = new FeedOptions($id, $url, $title, $saveAtOnce, $intervalSec, $onExistsUpdate);
         $this->save($feeds);
     }
-
 
     function insert(string $title, int $saveAtOnce, string $url, int $intervalSec, bool $onExistsUpdate): int
     {
@@ -95,7 +100,11 @@ class FeedStorage
 
     private function save($feeds): void
     {
-        if (!update_option(self::FEEDS_OPTION_KEY, $feeds)) {
+        $arr = [];
+        foreach ($feeds as $feed) {
+            $arr[] = $feed->toArray();
+        }
+        if (!update_option(self::FEEDS_OPTION_KEY, $arr)) {
             throw new Exception('Ошибка при сохранении фидов');
         }
     }
