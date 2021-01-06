@@ -25,10 +25,6 @@ spl_autoload_register(function ($className) {
         include_once $path;
     }
 });
-$rtlPluginPath = $_SERVER['DOCUMENT_ROOT'] . '/wp-content/plugins/sp-rtl-rus-to-lat/sp-rtl.php';
-if (file_exists($rtlPluginPath)) {
-    require_once $rtlPluginPath;
-}
 
 // время для крон задачи
 add_filter('cron_schedules', function ($schedules) {
@@ -44,6 +40,10 @@ if ($cronNextTime === false) {
     wp_schedule_event(time() + Constants::CRON_INTERVAL_SEC, 'krokoimport_interval', Constants::CRON_NEW_POST_HOOK_NAME, []);
 }
 add_action(Constants::CRON_NEW_POST_HOOK_NAME, function () {
+    $rtlPluginPath = $_SERVER['DOCUMENT_ROOT'] . '/wp-content/plugins/sp-rtl-rus-to-lat/sp-rtl.php';
+    if (file_exists($rtlPluginPath)) {
+        require_once $rtlPluginPath;
+    }
     $feedStorage = new FeedStorage();
     $allFeeds = $feedStorage->getAll();
     if (!empty($allFeeds)) {
