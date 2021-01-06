@@ -40,6 +40,10 @@ if ($cronNextTime === false) {
     wp_schedule_event(time() + Constants::CRON_INTERVAL_SEC, 'krokoimport_interval', Constants::CRON_NEW_POST_HOOK_NAME, []);
 }
 add_action(Constants::CRON_NEW_POST_HOOK_NAME, function () {
+    $rtlPluginPath = $_SERVER['DOCUMENT_ROOT'] . '/wp-content/plugins/sp-rtl-rus-to-lat/sp-rtl.php';
+    if (file_exists($rtlPluginPath)) {
+        require_once $rtlPluginPath;
+    }
     $feedStorage = new FeedStorage();
     $allFeeds = $feedStorage->getAll();
     if (!empty($allFeeds)) {
@@ -48,7 +52,7 @@ add_action(Constants::CRON_NEW_POST_HOOK_NAME, function () {
         foreach ($allFeeds as $feed) {
             $lastUpdateTime = $feed->leftUntilUpdateSec();
             $dt1 = new DateTime("@0");
-            $interval = $dt1->diff(new DateTime("@" . $feed->leftUntilUpdateSec()))->format('%aд %hч %iм %sс');
+            $interval = $dt1->diff(new DateTime("@" . $feed->leftUntilUpdateSec()))->format(' % aд % hч % iм % sс');
             echo 'До обновления: ' . $interval . ' [' . $feed->getID() . ': ' . $feed->getTitle() . "]\n";
             if ($lastUpdateTime == 0) {
                 $import->processFeed($feed);
@@ -76,9 +80,9 @@ add_filter('the_content', function ($content) {
     $newContent = '';
     $youtubeVideoId = get_post_meta(get_the_ID(), 'youtube_video_id', true);
     if (!empty($youtubeVideoId)) {
-        $newContent .= '<div class="youtube_video">
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/' . $youtubeVideoId . '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        </div>';
+        $newContent .= ' < div class="youtube_video" >
+        <iframe width = "560" height = "315" src = "https://www.youtube.com/embed/' . $youtubeVideoId . '" frameborder = "0" allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen ></iframe >
+        </div > ';
     }
     $newContent .= $content;
     return $newContent;
