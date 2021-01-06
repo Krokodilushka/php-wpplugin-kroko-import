@@ -1,1 +1,1 @@
-function run_all_crons_due_now { for SITE_URL in $(wp site list --fields=url --format=csv | tail -n +2 | sort); do wp cron event run --due-now --url="$SITE_URL" && echo -e "\t+ Finished crons for $SITE_URL" & done; wait $(jobs -p); echo "Done"; }; run_all_crons_due_now;
+function run_all_crons_due_now { for SITE_URL in $(/usr/local/bin/wp  site list --fields=url --format=csv | tail -n +2 | sort); do /usr/local/bin/wp  cron event run --due-now --url="$SITE_URL" && echo -e "\t+ Finished crons for $SITE_URL" & done; wait $(jobs -p); echo "Done"; }; run_all_crons_due_now;
