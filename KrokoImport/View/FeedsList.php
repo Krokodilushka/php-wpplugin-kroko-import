@@ -1,11 +1,14 @@
 <?php
 /** @var $feeds \KrokoImport\Data\XML\Feed */
 /** @var $currentUrl string */
-/** @var $magicKeyGETKey string */
 
-/** @var $magicKey string */
+/** @var $cronNextTime int */
+
+/** @var $cronExecutable string */
 
 use KrokoImport\Constants;
+
+$dt1 = new DateTime("@0");
 
 ?>
 <div class="wrap">
@@ -14,7 +17,7 @@ use KrokoImport\Constants;
         <table class="form-table" style="width:100%">
             <tr>
                 <td style="text-align: left">
-                    <a href="<?php echo $currentUrl ?>&drop_feeds">Сброс фидов</a>
+                    <!--                    <a href="--><?php //echo $currentUrl ?><!--&drop_feeds">Сброс фидов</a>-->
                 </td>
                 <td style="text-align: right">
                     Новый xml url: <input type="text" name="feed_url" value="" size="100">
@@ -33,7 +36,7 @@ use KrokoImport\Constants;
                     <th scope="row" style="width:20%">Имя</th>
                     <th scope="row" style="width:45%">URL</th>
                     <th scope="row" style="width:15%">Последнее обновление</th>
-                    <th scope="row" style="width:15%">Обновление через мин</th>
+                    <th scope="row" style="width:15%">Обновление через</th>
                 </tr>
                 </thead>
                 <?php foreach ($feeds as $feed) { ?>
@@ -57,9 +60,8 @@ use KrokoImport\Constants;
                             <a href="<?= $feed->getUrl() ?>" target="_blank"><?= esc_url($feed->getUrl()) ?></a>
                         </td>
                         <td><?= (($feed->getLastUpdateTime() !== NULL) ? date_i18n("d.m.Y H:i:s", $feed->getLastUpdateTime()) : '-') ?></td>
-                        <td>
-                            <?= round($feed->leftUntilUpdateSec() / 60) ?><br/>
-                            [<a href="<?= $currentUrl ?>&update_posts=<?= $feed->getID() ?>">обновить</a>]
+                        <td style="text-align: center">
+                            <?= $dt1->diff(new DateTime("@" . $feed->leftUntilUpdateSec()))->format('%a д<br/>%h:%i:%s'); ?>
                         </td>
                     </tr>
                 <?php } ?>
@@ -69,8 +71,10 @@ use KrokoImport\Constants;
     <table class="widefat" style="margin-top: .5em;text-align: center:width:100%">
         <tr>
             <td>
-                Ссылка для обновлений: <?php echo get_site_url() ?>/?<?= $magicKeyGETKey ?>
-                =<?php echo $magicKey ?>
+                Время сейчас: <?= date('d.m.Y H:i:s'); ?><br/>
+                Cron обработчик сработает через: <?= $cronNextTime - time() ?> сек
+                (<?= date('d.m.Y H:i:s', $cronNextTime) ?>)<br/>
+                Команда для запуска крона: <?= $cronExecutable ?>
             </td>
         </tr>
     </table>

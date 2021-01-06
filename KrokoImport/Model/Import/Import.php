@@ -33,6 +33,11 @@ class Import
         return $this->_logs;
     }
 
+    public function clearLogs(): void
+    {
+        $this->_logs = [];
+    }
+
     public function processFeed(FeedOptions $feedOptions)
     {
         $xml = XMLParser::load($feedOptions->getUrl());

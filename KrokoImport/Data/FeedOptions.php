@@ -67,7 +67,7 @@ class FeedOptions
     function leftUntilUpdateSec(): int
     {
         $lastUpdate = $this->getLastUpdateTime() ?: 0;
-        $left = ($lastUpdate + $this->getUpdateIntervalMin()) - time();
+        $left = ($lastUpdate + ($this->getUpdateIntervalMin() * 60)) - time();
         return ($left < 0) ? 0 : $left;
     }
 
