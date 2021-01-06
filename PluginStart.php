@@ -48,7 +48,7 @@ add_action(Constants::CRON_NEW_POST_HOOK_NAME, function () {
         foreach ($allFeeds as $feed) {
             $lastUpdateTime = $feed->leftUntilUpdateSec();
             $dt1 = new DateTime("@0");
-            $interval = $dt1->diff(new DateTime("@" . $feed->leftUntilUpdateSec()))->format(' % aд % hч % iм % sс');
+            $interval = $dt1->diff(new DateTime("@" . $feed->leftUntilUpdateSec()))->format(' %aд %hч %iм %sс');
             echo 'До обновления: ' . $interval . ' [' . $feed->getID() . ': ' . $feed->getTitle() . "]\n";
             if ($lastUpdateTime == 0) {
                 $import->processFeed($feed);
