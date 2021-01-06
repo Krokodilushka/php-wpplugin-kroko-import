@@ -76,9 +76,9 @@ add_filter('the_content', function ($content) {
     $newContent = '';
     $youtubeVideoId = get_post_meta(get_the_ID(), 'youtube_video_id', true);
     if (!empty($youtubeVideoId)) {
-        $newContent .= ' < div class="youtube_video" >
+        $newContent .= '<div class="youtube_video">
         <iframe width = "560" height = "315" src = "https://www.youtube.com/embed/' . $youtubeVideoId . '" frameborder = "0" allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen ></iframe >
-        </div > ';
+        </div >';
     }
     $newContent .= $content;
     return $newContent;
