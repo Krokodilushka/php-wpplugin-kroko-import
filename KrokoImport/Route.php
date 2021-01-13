@@ -26,6 +26,8 @@ class Route
                     echo $feedController->update();
                 } else if (!is_null(filter_input(INPUT_GET, Constants::ROUTE_FEED_DELETE))) {
                     echo $feedController->delete();
+                } else if (!is_null(filter_input(INPUT_GET, Constants::ROUTE_FEED_SHOW_POSTS))) {
+                    echo $feedController->showPosts();
                 } else if (!is_null(filter_input(INPUT_GET, Constants::ROUTE_FEED_SAVE))) {
                     echo $feedController->save();
                 } else {

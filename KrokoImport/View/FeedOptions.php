@@ -4,15 +4,18 @@
 /** @var $title string|null */
 /** @var $saveAtOnce int|null */
 /** @var $intervalMin int|null */
+
 /** @var $onExistsUpdate bool */
+
 ?>
 <?php if ( isset( $alerts ) && ! empty( $alerts ) ) { ?>
 	<?php foreach ( $alerts as $value ) { ?>
         <div class="alert"><?php echo $value; ?></div>
 	<?php } ?>
 <?php } ?>
-<form action="<?= \KrokoImport\Route::pluginUrlPath() . '&' . http_build_query( [ \KrokoImport\Constants::ROUTE_FEED      => true,
-                                                                                  \KrokoImport\Constants::ROUTE_FEED_SAVE => true
+<form action="<?= \KrokoImport\Route::pluginUrlPath() . '&' . http_build_query( [
+	\KrokoImport\Constants::ROUTE_FEED      => true,
+	\KrokoImport\Constants::ROUTE_FEED_SAVE => true
 ] ) ?>"
       method="post">
     <table class="form-table">
@@ -60,20 +63,3 @@
         <input class="button-primary" name="update_feed_settings" value="Сохранить" type="submit">
     </div>
 </form>
-<div class="feeds-data">
-	<?php if ( isset( $feedData ) && $feedData !== null ) { ?>
-		<?php if ( $feedData->countPosts() > 0 ) { ?>
-			<?php foreach ( $feedData->getPosts() as $value ) { ?>
-                ID: <?php echo $value->getID() ?><br/>
-                Title: <?php echo $value->getTitle() ?><br/>
-                Post content: <?php echo $value->getContent() ?><br/>
-                Thumbnail: <?php echo $value->getThumbnail() ?><br/>
-                Categories: <?php echo $value->getCategories()->toString() ?><br/>
-                Tags: <?php echo $value->getTags()->toString() ?><br/>
-                Metas: <?php echo $value->getMetas()->toString() ?><br/>
-                Comments: <?php echo $value->getComments()->count() ?><br/>
-                <hr/>
-			<?php } ?>
-		<?php } ?>
-	<?php } ?>
-</div>

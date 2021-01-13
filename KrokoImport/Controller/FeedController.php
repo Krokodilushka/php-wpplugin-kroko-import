@@ -34,8 +34,7 @@ class FeedController extends Controller {
 			'title'          => $feed->getTitle(),
 			'saveAtOnce'     => $feed->getSaveAtOnce(),
 			'intervalMin'    => $feed->getUpdateIntervalMin(),
-			'onExistsUpdate' => $feed->getOnExistsUpdate(),
-			'feedData'       => XMLParser::parse( XMLParser::load( $feed->getUrl() ) )
+			'onExistsUpdate' => $feed->getOnExistsUpdate()
 		) );
 	}
 
@@ -79,8 +78,7 @@ class FeedController extends Controller {
 			'title'          => $feedTitle,
 			'saveAtOnce'     => $saveAtOnce,
 			'intervalMin'    => $feedIntervalMin,
-			'onExistsUpdate' => $onExistsUpdate,
-			'feedData'       => XMLParser::parse( XMLParser::load( $feedUrl ) )
+			'onExistsUpdate' => $onExistsUpdate
 		) );
 	}
 
@@ -92,5 +90,17 @@ class FeedController extends Controller {
 		$this->getHolder()->getFeedStorage()->delete( $feedId );
 
 		return 'Удалено';
+	}
+
+	public function showPosts(): string {
+		$feedId = filter_input( INPUT_GET, 'feed_id' );
+		if ( is_null( $feedId ) ) {
+			throw new Exception( '$feedId not found' );
+		}
+		$feed = $this->getHolder()->getFeedStorage()->get( $feedId );
+
+		return $this->getHolder()->getView()->get( 'FeedPosts', array(
+			'feedData' => XMLParser::parse( XMLParser::load( $feed->getUrl() ) )
+		) );
 	}
 }

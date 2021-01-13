@@ -75,6 +75,12 @@ class FeedsTable extends WP_List_Table {
 			Constants::ROUTE_FEED_DELETE => true,
 			'feed_id'                    => $item['id']
 		] );
+		$showPosts = http_build_query( [
+			'page'                           => $_REQUEST['page'],
+			Constants::ROUTE_FEED            => true,
+			Constants::ROUTE_FEED_SHOW_POSTS => true,
+			'feed_id'                        => $item['id']
+		] );
 		$importNow = http_build_query( [
 			'page'                         => $_REQUEST['page'],
 			Constants::ROUTE_IMPORT        => true,
@@ -84,6 +90,7 @@ class FeedsTable extends WP_List_Table {
 		$actions   = array(
 			'edit'       => '<a href="?' . $edit . '">Изменить</a>',
 			'delete'     => '<a href="?' . $delete . '">Удалить</a>',
+			'show_posts' => '<a href="?' . $showPosts . '">Посмотреть посты</a>',
 			'import_now' => '<a href="?' . $importNow . '">Обновить сейчас</a>',
 		);
 
