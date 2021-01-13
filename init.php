@@ -23,12 +23,12 @@ spl_autoload_register( function ( $class_name ) {
 	$file_name             = str_replace(
 		array( 'My_', '_' ),      // Prefix | Underscores
 		array( '', '-' ),         // Remove | Replace with hyphens
-		strtolower( $class_name ) // lowercase
+		$class_name  // lowercase
 	);
 	$elements              = explode( '\\', $file_name );
 	$last_key              = end( array_keys( $elements ) );
-	$elements[ $last_key ] = 'class-' . $elements[ $last_key ];
-	$path = $dir . str_replace( '\\', '/', implode( '/', $elements ) ) . '.php';
+	$elements[ $last_key ] = 'class-' . strtolower( $elements[ $last_key ] );
+	$path                  = $dir . str_replace( '\\', '/', implode( '/', $elements ) ) . '.php';
 	if ( file_exists( $path ) ) {
 		include_once $path;
 	}
