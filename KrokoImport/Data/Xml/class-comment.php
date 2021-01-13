@@ -22,32 +22,32 @@ class Comment
         $this->_replies = $replies;
     }
 
-    function getID(): string
+    function get_id(): string
     {
         return $this->_id;
     }
 
-    function getAuthor(): string
+    function get_author(): string
     {
         return $this->_author;
     }
 
-    function getDate(): \DateTime
+    function get_date(): \DateTime
     {
         return $this->_date;
     }
 
-    function getText(): string
+    function get_text(): string
     {
         return $this->_text;
     }
 
-    function getMeta(): KeyValueStorage
+    function get_meta(): Key_Value_Storage
     {
         return $this->_meta;
     }
 
-    function getReplies(): ?Comments
+    function get_replies(): ?Comments
     {
         return $this->_replies;
     }

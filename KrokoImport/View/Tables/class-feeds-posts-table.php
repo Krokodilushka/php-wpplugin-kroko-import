@@ -17,7 +17,7 @@ class Feeds_Posts_Table extends WP_List_Table {
 		parent::__construct( $args );
 	}
 
-	public function addItem( Post $xmlPost ) {
+	public function add_item( Post $xmlPost ) {
 		$this->data[] = $xmlPost;
 	}
 
@@ -42,31 +42,31 @@ class Feeds_Posts_Table extends WP_List_Table {
 		return $sortable_columns;
 	}
 
-	public function column_default( $item, $columnName ) {
+	public function column_default( $item, $column_name ) {
 		/** @var Post $item */
-		switch ( $columnName ) {
+		switch ( $column_name ) {
 			case 'id':
-				return $item->getID();
+				return $item->get_id();
 			case 'thumbnail':
-				return '<a href="' . $item->getThumbnail() . '" target="_blank"><img src="' . $item->getThumbnail() . '" style="max-width:100%"></a>';
+				return '<a href="' . $item->get_thumbnail() . '" target="_blank"><img src="' . $item->get_thumbnail() . '" style="max-width:100%"></a>';
 			case 'title':
-				return $item->getTitle();
+				return $item->get_title();
 			case 'content':
-				return $item->getContent();
+				return $item->get_content();
 			case 'tags':
-				return $item->getTags()->toString();
+				return $item->get_tags()->toString();
 			case 'meta':
-				return $item->getMetas()->toString();
+				return $item->get_metas()->toString();
 			case 'comments':
-				return $item->getComments()->count();
+				return $item->get_comments()->count();
 			case 'date':
-				return $item->getDate()->format( 'd.m.Y H:i:s' );
+				return $item->get_date()->format( 'd.m.Y H:i:s' );
 			default:
 				return print_r( $item, true ); //Show the whole array for troubleshooting purposes
 		}
 	}
 
-	public function prepareItems() {
+	public function prepare_items() {
 		$this->_column_headers = array( $this->get_columns(), [], $this->get_sortable_columns() );
 		$this->items           = $this->data;
 	}

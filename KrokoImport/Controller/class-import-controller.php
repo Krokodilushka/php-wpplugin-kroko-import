@@ -20,13 +20,13 @@ class Import_Controller extends Controller
 
     public function manual(): string
     {
-        $feedId = filter_input(INPUT_GET, 'feed_id');
-        if (is_null($feedId)) {
-            throw new Exception('$feedId not found');
+        $feed_id = filter_input(INPUT_GET, 'feed_id');
+        if (is_null($feed_id)) {
+            throw new Exception('$feed_id not found');
         }
-        $feed = $this->getHolder()->getFeedStorage()->get($feedId);
+        $feed = $this->get_holder()->get_feed_storage()->get($feed_id);
         $this->_import->process_feed($feed);
-        $this->getHolder()->getFeedStorage()->setLastUpdateTime($feedId);
+        $this->get_holder()->get_feed_storage()->set_last_update_time($feed_id);
         $logs = $this->_import->get_logs();
         return '<pre>' . print_r($logs, true) . '</pre>';
     }

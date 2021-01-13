@@ -16,13 +16,13 @@ class Feeds_Table extends WP_List_Table {
 		parent::__construct( $args );
 	}
 
-	public function addItem( int $id, string $name, string $url, ?int $lastUpdate, int $leftUntilUpdateSec ) {
+	public function add_item( int $id, string $name, string $url, ?int $last_update, int $left_until_update_sec ) {
 		$this->data[] = [
 			'id'                 => $id,
 			'name'               => $name,
 			'url'                => $url,
-			'lastUpdate'         => $lastUpdate,
-			'leftUntilUpdateSec' => $leftUntilUpdateSec,
+			'lastUpdate'         => $last_update,
+			'leftUntilUpdateSec' => $left_until_update_sec,
 		];
 	}
 
@@ -39,20 +39,16 @@ class Feeds_Table extends WP_List_Table {
 	}
 
 	public function get_sortable_columns() {
-		$sortable_columns = array(
-			'id'         => [ 'id', true ],
-			'lastUpdate' => [ 'lastUpdate', true ],
-			'nextUpdate' => [ 'nextUpdate', true ],
-		);
+		$sortable_columns = [];
 
 		return $sortable_columns;
 	}
 
-	public function column_default( $item, $columnName ) {
-		switch ( $columnName ) {
+	public function column_default( $item, $column_name ) {
+		switch ( $column_name ) {
 			case 'name':
 			case 'url':
-				return $item[ $columnName ];
+				return $item[ $column_name ];
 			case 'lastUpdate':
 				return ( ( $item['lastUpdate'] !== null ) ? date_i18n( "d.m.Y H:i:s", $item['lastUpdate'] ) : '-' );
 			case 'nextUpdate':
@@ -97,7 +93,7 @@ class Feeds_Table extends WP_List_Table {
 		return sprintf( '%1$s %2$s', $item['id'], $this->row_actions( $actions ) );
 	}
 
-	public function prepareItems() {
+	public function prepare_items() {
 		$this->_column_headers = array( $this->get_columns(), [], $this->get_sortable_columns() );
 		$this->items           = $this->data;
 	}

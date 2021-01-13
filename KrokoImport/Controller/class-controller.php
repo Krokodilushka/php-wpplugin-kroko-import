@@ -14,20 +14,20 @@ class Controller
         $this->_holder = $holder;
     }
 
-    protected function getHolder(): Holder
+    protected function get_holder(): Holder
     {
         return $this->_holder;
     }
 
-    public function updatePosts(string $feedID): void
+    public function update_posts(string $feed_id): void
     {
-        $feed = $this->_holder->getFeedStorage()->get($feedID);
+        $feed = $this->_holder->get_feed_storage()->get($feed_id);
         try {
             $this->_holder->getImportPosts()->perform($feed);
-            $this->_holder->getFeedStorage()->setLastUpdateTime($feed->getID());
-            echo $this->_holder->getView()->get('view-update-posts', array(
-                'feedID' => $feed->getID(),
-                'feedURL' => $feed->getUrl(),
+            $this->_holder->get_feed_storage()->set_last_update_time($feed->get_id());
+            echo $this->_holder->get_view()->get('view-update-posts', array(
+                'feedID' => $feed->get_id(),
+                'feedURL' => $feed->get_url(),
                 'response' => $this->_holder->getImportPosts()->getLogs()
             ));
         } catch (\Exception $e) {
@@ -40,7 +40,7 @@ class Controller
      * Static
      */
 
-    public static function getCronMagicKey(): string
+    public static function get_cron_magic_key(): string
     {
         $res = get_option(Constants::CRON_UPDATE_MAGIC_KEY);
         if ($res === false) {

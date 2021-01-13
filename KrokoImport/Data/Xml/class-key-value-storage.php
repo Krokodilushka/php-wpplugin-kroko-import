@@ -12,18 +12,18 @@ class Key_Value_Storage
         $this->_items[] = $item;
     }
 
-    /** @return KeyValue[] */
+    /** @return Key_Value[] */
     function get(): array
     {
         return $this->_items;
     }
 
-    function getByKey(string $key): ?KeyValue
+    function get_by_key(string $key): ?Key_Value
     {
         $res = NULL;
         if ($this->count() > 0) {
             foreach ($this->get() as $value) {
-                if ($value->getKey() == $key) {
+                if ($value->get_key() == $key) {
                     $res = $value;
                     break;
                 }
@@ -42,7 +42,7 @@ class Key_Value_Storage
         $tmp = [];
         if ($this->count() > 0) {
             foreach ($this->get() as $value) {
-                $tmp[] = '[' . $value->getKey() . ' => ' . $value->getValue() . ']';
+                $tmp[] = '[' . $value->get_key() . ' => ' . $value->get_value() . ']';
             }
         }
         return implode(', ', $tmp);

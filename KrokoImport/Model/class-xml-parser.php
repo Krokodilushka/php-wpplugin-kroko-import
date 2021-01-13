@@ -2,6 +2,7 @@
 
 namespace KrokoImport\Model;
 
+use DateTime;
 use KrokoImport\Data\Xml\Comment;
 use KrokoImport\Data\Xml\Comments;
 use KrokoImport\Data\Xml\Feed;
@@ -19,19 +20,19 @@ class XML_Parser
         return simplexml_load_file($url, 'SimpleXMLElement', LIBXML_NOWARNING);
     }
 
-    static function parse($simpleXml)
+    static function parse($simple_xml)
     {
-        if (!isset($simpleXml->post)) {
+        if (!isset($simple_xml->post)) {
             throw new XML_Parser_Exception("посты не найдены");
         }
         $feed = new Feed();
-        $itemPos = 0;
-        foreach ($simpleXml->post as $post) {
+        $item_pos = 0;
+        foreach ($simple_xml->post as $post) {
             if (!isset($post->id)) {
-                throw new XML_Parser_Exception("id не найден в post $itemPos");
+                throw new XML_Parser_Exception("id не найден в post $item_pos");
             }
             if (!isset($post->title)) {
-                throw new XML_Parser_Exception("title не найден в post $itemPos");
+                throw new XML_Parser_Exception("title не найден в post $item_pos");
             }
             $id = $post->id;
             $title = $post->title;
@@ -41,7 +42,7 @@ class XML_Parser
             }
             $thumbnail = ($post->thumbnail) ? $post->thumbnail : '';
             $content = ($post->content) ? $post->content : '';
-            $date = (new \DateTime())->setTimestamp((string)$post->date);
+            $date = (new DateTime())->setTimestamp((string)$post->date);
             // категории
             $categories = new Key_Value_Storage();
             if (isset($post->category)) {
@@ -77,8 +78,8 @@ class XML_Parser
             }
             // комментарии
             $comments = new Comments();
-            self::processComments($comments, $post);
-            $feed->putPost(new Post(
+            self::process_comments($comments, $post);
+            $feed->put_post(new Post(
                 (string)$id,
                 (string)$title,
                 $slug,
@@ -90,15 +91,15 @@ class XML_Parser
                 $tags,
                 $comments
             ));
-            $itemPos++;
+            $item_pos++;
         }
         return $feed;
     }
 
-    static function processComments($comments, $simpleXMLElement)
+    static function process_comments($comments, $simple_xml_element)
     {
-        if (isset($simpleXMLElement->comment)) {
-            foreach ($simpleXMLElement->comment as $comment) {
+        if (isset($simple_xml_element->comment)) {
+            foreach ($simple_xml_element->comment as $comment) {
                 if (!isset($comment->id)) {
                     throw new XML_Parser_Exception("у комментария должен быть guid");
                 }
@@ -125,9 +126,9 @@ class XML_Parser
                 }
                 $replies = new Comments();
                 if (isset($comment->replies)) {
-                    self::processComments($replies, $comment->replies);
+                    self::process_comments($replies, $comment->replies);
                 }
-                $comments->put(new Comment((string)$comment->id, (string)$comment->author, (new \DateTime())->setTimestamp((int)$comment->date), (string)$comment->text, $metas, $replies));
+                $comments->put(new Comment((string)$comment->id, (string)$comment->author, (new DateTime())->setTimestamp((int)$comment->date), (string)$comment->text, $metas, $replies));
             }
         }
     }

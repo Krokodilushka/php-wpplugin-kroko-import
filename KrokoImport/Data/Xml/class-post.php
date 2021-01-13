@@ -41,52 +41,52 @@ class Post
         $this->_comments = $comments;
     }
 
-    function getID(): string
+    function get_id(): string
     {
         return $this->_id;
     }
 
-    function getTitle(): string
+    function get_title(): string
     {
         return $this->_title;
     }
 
-    function getSlug(): ?string
+    function get_slug(): ?string
     {
         return $this->_slug;
     }
 
-    function getContent(): ?string
+    function get_content(): ?string
     {
         return $this->_content;
     }
 
-    function getThumbnail(): ?string
+    function get_thumbnail(): ?string
     {
         return $this->_thumbnail;
     }
 
-    function getDate(): \DateTime
+    function get_date(): \DateTime
     {
         return $this->_date;
     }
 
-    function getCategories(): Key_Value_Storage
+    function get_categories(): Key_Value_Storage
     {
         return $this->_categories;
     }
 
-    function getMetas(): Key_Value_Storage
+    function get_metas(): Key_Value_Storage
     {
         return $this->_metas;
     }
 
-    function getTags(): Strings_Storage
+    function get_tags(): Strings_Storage
     {
         return $this->_tags;
     }
 
-    function getComments(): Comments
+    function get_comments(): Comments
     {
         return $this->_comments;
     }

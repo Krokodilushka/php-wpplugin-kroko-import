@@ -4,12 +4,12 @@ use KrokoImport\View\Tables\Feeds_Posts_Table;
 
 $table = new Feeds_Posts_Table();
 if ( ! empty( $feedData ) ) {
-	if ( $feedData->countPosts() > 0 ) {
-		foreach ( $feedData->getPosts() as $item ) {
-			$table->addItem( $item );
+	if ( $feedData->count_posts() > 0 ) {
+		foreach ( $feedData->get_posts() as $item ) {
+			$table->add_item( $item );
 		}
 	}
-	$table->prepareItems();
+	$table->prepare_items();
 }
 ?>
 <div class="feeds-data">

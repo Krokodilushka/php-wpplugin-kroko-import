@@ -14,12 +14,12 @@ class Key_Value
         $this->_value = $value;
     }
 
-    public function getKey(): string
+    public function get_key(): string
     {
         return $this->_key;
     }
 
-    public function getValue(): string
+    public function get_value(): string
     {
         return $this->_value;
     }

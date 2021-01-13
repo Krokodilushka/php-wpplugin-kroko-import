@@ -6,8 +6,8 @@ class Comments {
 
     private $_comments = [];
 
-    public function put($commentItem) {
-        $this->_comments[] = $commentItem;
+    public function put($comment_item) {
+        $this->_comments[] = $comment_item;
     }
 
     /** @return Comment[] */

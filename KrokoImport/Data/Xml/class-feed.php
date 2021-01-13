@@ -2,25 +2,21 @@
 
 namespace KrokoImport\Data\XML;
 
-class Feed
-{
+class Feed {
 
-    /** @var Post[] */
-    private $_posts = array();
+	/** @var Post[] */
+	private $_posts = array();
 
-    public function putPost($post): void
-    {
-        $this->_posts[] = $post;
-    }
+	public function put_post( $post ): void {
+		$this->_posts[] = $post;
+	}
 
-    function getPosts(): array
-    {
-        return $this->_posts;
-    }
+	function get_posts(): array {
+		return $this->_posts;
+	}
 
-    function countPosts(): int
-    {
-        return count($this->_posts);
-    }
+	function count_posts(): int {
+		return count( $this->_posts );
+	}
 
 }

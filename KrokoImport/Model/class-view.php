@@ -13,15 +13,15 @@ class View {
     }
 
     public function get($template, $data = array()): string {
-        $templateFile = $this->_dir . '/' . $template . '.php';
-        if (!file_exists($templateFile)) {
-            throw new Exception('Error template (' . $templateFile . ')');
+        $template_file = $this->_dir . '/' . $template . '.php';
+        if (!file_exists($template_file)) {
+            throw new Exception('Error template (' . $template_file . ')');
         }
         ob_start();
         if (is_array($data) && !empty($data)) {
             extract($data);
         }
-        include($templateFile);
+        include($template_file);
         $out = ob_get_contents();
         ob_end_clean();
         return $out;

@@ -19,7 +19,7 @@ class Strings_Storage
     }
 
     /** @return string|null */
-    function getByKey(string $key): ?string
+    function get_by_key(string $key): ?string
     {
         $res = NULL;
         if ($this->count() > 0) {

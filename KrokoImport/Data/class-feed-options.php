@@ -8,75 +8,75 @@ class Feed_Options
     private $_id;
     private $_url;
     private $_title;
-    private $_saveAtOnce;
-    private $_updateIntervalMin;
-    private $_onExistsUpdate;
-    private $_lastUpdateTime;
+    private $_save_at_once;
+    private $_update_interval_min;
+    private $_on_exists_update;
+    private $_last_update_time;
 
-    public function __construct(string $id, string $url, string $title, int $saveAtOnce, int $updateIntervalMin, bool $onExistsUpdate, ?int $lastUpdateTime = NULL)
+    public function __construct(string $id, string $url, string $title, int $save_at_once, int $update_interval_min, bool $on_exists_update, ?int $last_update_time = NULL)
     {
         $this->_id = $id;
         $this->_url = $url;
         $this->_title = $title;
-        $this->_saveAtOnce = $saveAtOnce;
-        $this->_updateIntervalMin = $updateIntervalMin;
-        $this->_onExistsUpdate = $onExistsUpdate;
-        $this->_lastUpdateTime = $lastUpdateTime;
+        $this->_save_at_once = $save_at_once;
+        $this->_update_interval_min = $update_interval_min;
+        $this->_on_exists_update = $on_exists_update;
+        $this->_last_update_time = $last_update_time;
     }
 
-    function getID(): string
+    function get_id(): string
     {
         return $this->_id;
     }
 
-    function getUrl(): string
+    function get_url(): string
     {
         return $this->_url;
     }
 
-    function getTitle(): string
+    function get_title(): string
     {
         return $this->_title;
     }
 
-    public function getSaveAtOnce(): int
+    public function get_save_at_once(): int
     {
-        return $this->_saveAtOnce;
+        return $this->_save_at_once;
     }
 
-    function getUpdateIntervalMin(): int
+    function get_update_interval_min(): int
     {
-        return $this->_updateIntervalMin;
+        return $this->_update_interval_min;
     }
 
-    function getOnExistsUpdate(): bool
+    function get_on_exists_update(): bool
     {
-        return $this->_onExistsUpdate;
+        return $this->_on_exists_update;
     }
 
-    function getLastUpdateTime(): ?int
+    function get_last_update_time(): ?int
     {
-        return $this->_lastUpdateTime;
+        return $this->_last_update_time;
     }
 
-    function setLastUpdateTime(int $lastUpdateTime): void
+    function set_last_update_time(int $last_update_time): void
     {
-        $this->_lastUpdateTime = $lastUpdateTime;
+        $this->_last_update_time = $last_update_time;
     }
 
-    function leftUntilUpdateSec(): int
+    function left_until_update_sec(): int
     {
-        $lastUpdate = $this->getLastUpdateTime() ?: 0;
-        $left = ($lastUpdate + ($this->getUpdateIntervalMin() * 60)) - time();
+        $lastUpdate = $this->get_last_update_time() ?: 0;
+        $left = ($lastUpdate + ( $this->get_update_interval_min() * 60)) - time();
         return ($left < 0) ? 0 : $left;
     }
 
-    public function toArray(): array
+    public function to_array(): array
     {
         return get_object_vars($this);
     }
 
-    public static function fromArray(array $arr): Feed_Options
+    public static function from_array(array $arr): Feed_Options
     {
         $id = $arr['_id'] ?? null;
         if (is_null($id)) {

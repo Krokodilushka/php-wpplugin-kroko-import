@@ -1,4 +1,5 @@
 <?php
+/** @var $feed_id int|null */
 /** @var $alerts array|null */
 /** @var $xmlUrl string */
 /** @var $title string|null */
@@ -23,10 +24,10 @@ use KrokoImport\Route;
       method="post">
     <table class="form-table">
         <tbody>
-		<?php if ( isset( $feedId ) ) { ?>
+		<?php if ( isset( $feed_id ) ) { ?>
             <tr>
                 <th scope="row">ID:</th>
-                <td><input type="text" name="feed_id" value="<?php echo $feedId ?>" size="5" readonly></td>
+                <td><input type="text" name="feed_id" value="<?php echo $feed_id ?>" size="5" readonly></td>
             </tr>
 		<?php } ?>
         <tr>

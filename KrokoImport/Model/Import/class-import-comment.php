@@ -16,46 +16,46 @@ class Import_Comment extends Loggable
 
     const WP_COMMENT_META_KEY_ID = 'kroko_import_comment_id';
 
-    public function getWPCommentsByXMLCategoryKey(string $xmlCommentId): array
+    public function get_wp_comments_by_xml_category_key(string $xmlCommentId): array
     {
-        $wpComments = get_comments(array(
+        $wp_comments = get_comments(array(
             'meta_key' => self::WP_COMMENT_META_KEY_ID,
             'meta_value' => $xmlCommentId,
         ));
-        if (empty($wpComments)) {
+        if (empty($wp_comments)) {
             throw new Wp_Comment_Not_Found_Exception('Комментарий с xml id ' . $xmlCommentId . ' не найден');
         }
-        return $wpComments;
+        return $wp_comments;
     }
 
-    public function insert(string $postId, ?int $replyTo, Comment $comment): int
+    public function insert(string $postId, ?int $reply_to, Comment $comment): int
     {
-        $args = $this->getDefaultArgs($postId, $comment);
-        $args['comment_date'] = $comment->getDate()->format('Y-m-d H:i:s');
-        $args['comment_meta'][self::WP_COMMENT_META_KEY_ID] = $comment->getID();
+        $args = $this->get_default_args($postId, $comment);
+        $args['comment_date'] = $comment->get_date()->format('Y-m-d H:i:s');
+        $args['comment_meta'][self::WP_COMMENT_META_KEY_ID] = $comment->get_id();
         $args['comment_approved'] = 1;
-        if (!is_null($replyTo)) {
-            $args['comment_parent'] = $replyTo;
+        if (!is_null($reply_to)) {
+            $args['comment_parent'] = $reply_to;
         }
-        $commentID = wp_insert_comment($args);
-        return $commentID;
+        $comment_id = wp_insert_comment($args);
+        return $comment_id;
     }
 
-    public function update(string $postId, WP_Comment $wpComment, Comment $comment): int
+    public function update(string $post_id, WP_Comment $wp_comment, Comment $comment): int
     {
-        $args = $this->getDefaultArgs($postId, $comment);
-        $args['comment_ID'] = $wpComment->comment_ID;
+        $args = $this->get_default_args($post_id, $comment);
+        $args['comment_ID'] = $wp_comment->comment_ID;
         wp_update_comment($args, true);
         return $args['comment_ID'];
     }
 
-    private function getDefaultArgs(string $postId, Comment $comment): array
+    private function get_default_args(string $post_id, Comment $comment): array
     {
         return [
-            'comment_post_ID' => $postId,
-            'comment_author' => $comment->getAuthor(),
-            'comment_author_email' => md5($comment->getAuthor()) . '@kroko-import.test',
-            'comment_content' => $comment->getText(),
+            'comment_post_ID' => $post_id,
+            'comment_author' => $comment->get_author(),
+            'comment_author_email' => md5($comment->get_author()) . '@kroko-import.test',
+            'comment_content' => $comment->get_text(),
             'comment_parent' => 0,
             'comment_meta' => []
         ];

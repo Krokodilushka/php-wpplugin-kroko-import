@@ -50,18 +50,18 @@ if ( $cron_next_time === false ) {
 }
 add_action( Constants::CRON_NEW_POST_HOOK_NAME, function () {
 	$feed_storage = new Feed_Storage();
-	$all_feeds    = $feed_storage->getAll();
+	$all_feeds    = $feed_storage->get_all();
 	if ( ! empty( $all_feeds ) ) {
 		$import = new Import;
 		/** @var \KrokoImport\Data\Feed_Options $feed */
 		foreach ( $all_feeds as $feed ) {
-			$lastUpdateTime = $feed->leftUntilUpdateSec();
+			$lastUpdateTime = $feed->left_until_update_sec();
 			$dt1            = new DateTime( "@0" );
-			$interval       = $dt1->diff( new DateTime( "@" . $feed->leftUntilUpdateSec() ) )->format( ' %aд %hч %iм %sс' );
-			echo 'До обновления: ' . $interval . ' [' . $feed->getID() . ': ' . $feed->getTitle() . "]\n";
+			$interval       = $dt1->diff( new DateTime( "@" . $feed->left_until_update_sec() ) )->format( ' %aд %hч %iм %sс' );
+			echo 'До обновления: ' . $interval . ' [' . $feed->get_id() . ': ' . $feed->get_title() . "]\n";
 			if ( $lastUpdateTime == 0 ) {
 				$import->process_feed( $feed );
-				$feed_storage->setLastUpdateTime( $feed->getID() );
+				$feed_storage->set_last_update_time( $feed->get_id() );
 				print_r( $import->get_logs() );
 				$import->clear_logs();
 			}
