@@ -1,6 +1,7 @@
 <?php
 /** @var $currentUrl string */
 /** @var $cronNextTime int */
+
 /** @var $cronExecutable string */
 
 use KrokoImport\Constants;
@@ -12,8 +13,8 @@ if ( ! empty( $feeds ) ) {
 	foreach ( $feeds as $feed ) {
 		$feedsTable->addItem( $feed->getID(), $feed->getTitle(), $feed->getUrl(), $feed->getLastUpdateTime(), $feed->leftUntilUpdateSec() );
 	}
+	$feedsTable->prepareItems();
 }
-$feedsTable->prepareItems();
 ?>
     <div class="wrap">
         <form action="<?= \KrokoImport\Route::pluginUrlPath() . '&' . http_build_query( [

@@ -3,17 +3,15 @@
 use KrokoImport\View\Tables\FeedsPostsTable;
 
 $table = new FeedsPostsTable();
-if ( isset( $feedData ) ) {
+if ( ! empty( $feedData ) ) {
 	if ( $feedData->countPosts() > 0 ) {
 		foreach ( $feedData->getPosts() as $item ) {
 			$table->addItem( $item );
 		}
 	}
+	$table->prepareItems();
 }
 ?>
 <div class="feeds-data">
-	<?php
-	$table->prepareItems();
-	$table->display();
-	?>
+	<?php $table->display(); ?>
 </div>

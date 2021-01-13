@@ -26,7 +26,7 @@ class FeedsTable extends WP_List_Table {
 		];
 	}
 
-	public function getColumns() {
+	public function get_columns() {
 		$columns = [
 			'id'         => 'ID',
 			'name'       => 'Имя',
@@ -48,7 +48,7 @@ class FeedsTable extends WP_List_Table {
 		return $sortable_columns;
 	}
 
-	public function columnDefault( $item, $columnName ) {
+	public function column_default( $item, $columnName ) {
 		switch ( $columnName ) {
 			case 'name':
 			case 'url':
@@ -98,7 +98,7 @@ class FeedsTable extends WP_List_Table {
 	}
 
 	public function prepareItems() {
-		$this->_column_headers = array( $this->getColumns(), [], $this->get_sortable_columns() );
+		$this->_column_headers = array( $this->get_columns(), [], $this->get_sortable_columns() );
 		$this->items           = $this->data;
 	}
 }
