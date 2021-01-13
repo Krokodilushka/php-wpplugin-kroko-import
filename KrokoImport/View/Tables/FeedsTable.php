@@ -26,7 +26,7 @@ class FeedsTable extends WP_List_Table {
 		];
 	}
 
-	public function get_columns() {
+	public function getColumns() {
 		$columns = [
 			'id'         => 'ID',
 			'name'       => 'Имя',

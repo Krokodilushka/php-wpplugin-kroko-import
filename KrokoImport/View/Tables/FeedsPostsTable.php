@@ -21,7 +21,7 @@ class FeedsPostsTable extends WP_List_Table {
 		$this->data[] = $xmlPost;
 	}
 
-	public function get_columns() {
+	public function getColumns() {
 		$columns = [
 			'id'        => 'ID',
 			'thumbnail' => 'Картинка',
