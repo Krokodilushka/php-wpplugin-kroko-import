@@ -17,21 +17,31 @@ if ( ! empty( $feeds ) ) {
 }
 ?>
     <div class="wrap">
-        <form action="<?= \KrokoImport\Route::pluginUrlPath() . '&' . http_build_query( [
-			Constants::ROUTE_FEED        => true,
-			Constants::ROUTE_FEED_CREATE => true
-		] ) ?>"
-              method="post">
-            <table class="form-table" style="width:100%">
-                <tr>
-                    <td style="text-align: right">
+        <table class="form-table" style="width:100%">
+            <tr>
+                <td style="text-align: right">
+                    <form action="<?= \KrokoImport\Route::pluginUrlPath() . '&' . http_build_query( [
+						Constants::ROUTE_FEED        => true,
+						Constants::ROUTE_FEED_CREATE => true
+					] ) ?>"
+                          method="post">
                         Новый xml url: <input type="text" name="feed_url" value="" size="100"/>
                         &nbsp;<input class="button-primary" name="new_xml" value="Добавить &raquo;" type="submit">
-                        <br/>
-                    </td>
-                </tr>
-            </table>
-        </form>
+                    </form>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: right">
+                    <form action="<?= \KrokoImport\Route::pluginUrlPath() ?>" method="get">
+                        <input type="hidden" name="page" value="<?= $_REQUEST['page'] ?>">
+                        <input type="hidden" name="<?= Constants::ROUTE_FEED ?>" value="1">
+                        <input type="hidden" name="<?= Constants::ROUTE_FEED_SHOW_POSTS ?>" value="1">
+                        Просмотр фида: <input type="text" name="feed_url" value="" size="100"/>
+                        &nbsp;<input class="button-primary" name="new_xml" value="Добавить &raquo;" type="submit">
+                    </form>
+                </td>
+            </tr>
+        </table>
 		<?php
 		$feedsTable->display();
 		?>
