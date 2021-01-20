@@ -5,6 +5,7 @@ namespace KrokoImport\Controller;
 
 
 use Exception;
+use KrokoImport\Model\Import\Import;
 use KrokoImport\Model\XML_Parser;
 
 class Feed_Controller extends Controller {
@@ -93,14 +94,14 @@ class Feed_Controller extends Controller {
 	}
 
 	public function show_posts(): string {
-		$feed_id = filter_input( INPUT_GET, 'feed_id' );
-		if ( is_null( $feed_id ) ) {
-			throw new Exception( '$feed_id not found' );
+		$feed_url = filter_input( INPUT_GET, 'feed_url' );
+		if ( is_null( $feed_url ) ) {
+			throw new Exception( '$feed_url not found' );
 		}
-		$feed = $this->get_holder()->get_feed_storage()->get( $feed_id );
 
 		return $this->get_holder()->get_view()->get( 'view-feed-posts', array(
-			'feedData' => XML_Parser::parse( XML_Parser::load( $feed->get_url() ) )
+			'feed_url' => $feed_url,
+			'feedData' => ( new Import() )->parseUrl( $feed_url )
 		) );
 	}
 }

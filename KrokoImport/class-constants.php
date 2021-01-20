@@ -17,6 +17,7 @@ class Constants {
 
 	const ROUTE_IMPORT = 'import';
 	const ROUTE_IMPORT_MANUAL = 'manual';
+	const ROUTE_IMPORT_POST = 'post';
 
 	const CRON_NEW_POST_HOOK_NAME = 'wp_krokoimport_new_post';
 	const CRON_INTERVAL_SEC = 600;

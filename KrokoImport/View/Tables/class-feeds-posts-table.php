@@ -3,6 +3,7 @@
 namespace KrokoImport\View\Tables;
 
 use DateTime;
+use KrokoImport\Constants;
 use KrokoImport\Data\XML\Post;
 use WP_List_Table;
 
@@ -11,9 +12,11 @@ class Feeds_Posts_Table extends WP_List_Table {
 	/** @var Post $data */
 	private $data;
 	private $dt1;
+	private $feed_url;
 
-	public function __construct( $args = [] ) {
-		$this->dt1 = new DateTime( "@0" );
+	public function __construct( string $feed_url, $args = [] ) {
+		$this->feed_url = $feed_url;
+		$this->dt1      = new DateTime( "@0" );
 		parent::__construct( $args );
 	}
 
@@ -64,6 +67,21 @@ class Feeds_Posts_Table extends WP_List_Table {
 			default:
 				return print_r( $item, true ); //Show the whole array for troubleshooting purposes
 		}
+	}
+
+	function column_id( Post $item ) {
+		$edit    = http_build_query( [
+			'page'                       => $_REQUEST['page'],
+			Constants::ROUTE_IMPORT        => true,
+			Constants::ROUTE_IMPORT_POST => true,
+			'feed_url'                   => $this->feed_url,
+			'post_id'                    => $item->get_id()
+		] );
+		$actions = array(
+			'import_post' => '<a href="?' . $edit . '">Обновить / добавить пост</a>',
+		);
+
+		return sprintf( '%1$s %2$s', $item->get_id(), $this->row_actions( $actions ) );
 	}
 
 	public function prepare_items() {

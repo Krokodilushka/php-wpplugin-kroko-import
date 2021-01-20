@@ -35,6 +35,8 @@ class Route {
 				$post_controller = new Import_Controller( $holder );
 				if ( ! is_null( filter_input( INPUT_GET, Constants::ROUTE_IMPORT_MANUAL ) ) ) {
 					echo $post_controller->manual();
+				} else if ( ! is_null( filter_input( INPUT_GET, Constants::ROUTE_IMPORT_POST ) ) ) {
+					echo $post_controller->one_post();
 				} else {
 					throw new \Exception( 'action not found' );
 				}

@@ -25,8 +25,9 @@ if ( ! empty( $feeds ) ) {
             <table class="form-table" style="width:100%">
                 <tr>
                     <td style="text-align: right">
-                        Новый xml url: <input type="text" name="feed_url" value="" size="100">
-                        &nbsp;<input class="button-primary" name="new_xml" value="Добавить &raquo;" type="submit"><br/>
+                        Новый xml url: <input type="text" name="feed_url" value="" size="100"/>
+                        &nbsp;<input class="button-primary" name="new_xml" value="Добавить &raquo;" type="submit">
+                        <br/>
                     </td>
                 </tr>
             </table>

@@ -2,7 +2,9 @@
 
 use KrokoImport\View\Tables\Feeds_Posts_Table;
 
-$table = new Feeds_Posts_Table();
+/** @var string $feed_url */
+
+$table = new Feeds_Posts_Table( $feed_url );
 if ( ! empty( $feedData ) ) {
 	if ( $feedData->count_posts() > 0 ) {
 		foreach ( $feedData->get_posts() as $item ) {

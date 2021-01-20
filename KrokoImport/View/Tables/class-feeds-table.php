@@ -4,6 +4,7 @@ namespace KrokoImport\View\Tables;
 
 use DateTime;
 use KrokoImport\Constants;
+use KrokoImport\Data\Feed_Options;
 use WP_List_Table;
 
 class Feeds_Table extends WP_List_Table {
@@ -58,7 +59,7 @@ class Feeds_Table extends WP_List_Table {
 		}
 	}
 
-	function column_id( $item ) {
+	function column_id( array $item ) {
 		$edit      = http_build_query( [
 			'page'                       => $_REQUEST['page'],
 			Constants::ROUTE_FEED        => true,
@@ -75,7 +76,7 @@ class Feeds_Table extends WP_List_Table {
 			'page'                           => $_REQUEST['page'],
 			Constants::ROUTE_FEED            => true,
 			Constants::ROUTE_FEED_SHOW_POSTS => true,
-			'feed_id'                        => $item['id']
+			'feed_url'                       => $item['url']
 		] );
 		$importNow = http_build_query( [
 			'page'                         => $_REQUEST['page'],
