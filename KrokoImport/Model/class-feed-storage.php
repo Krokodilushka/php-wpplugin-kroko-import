@@ -19,7 +19,6 @@ class Feed_Storage {
 				$arr[] = Feed_Options::from_array( $feed );
 			}
 		}
-
 		return $arr;
 	}
 

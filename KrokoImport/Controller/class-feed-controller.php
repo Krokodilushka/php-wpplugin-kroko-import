@@ -73,13 +73,13 @@ class Feed_Controller extends Controller {
 		}
 
 		return $this->get_holder()->get_view()->get( 'view-feed-options', array(
-			'alerts'           => $alerts,
-			'feed_id'          => $feed_id,
-			'xmlUrl'           => $url,
-			'title'            => $feed_title,
-			'save_at_once'     => $save_at_once,
-			'intervalMin'      => $feed_interval_min,
-			'on_exists_update' => $on_exists_update
+			'alerts'         => $alerts,
+			'feed_id'        => $feed_id,
+			'xmlUrl'         => $url,
+			'title'          => $feed_title,
+			'saveAtOnce'     => $save_at_once,
+			'intervalMin'    => $feed_interval_min,
+			'onExistsUpdate' => $on_exists_update
 		) );
 	}
 
